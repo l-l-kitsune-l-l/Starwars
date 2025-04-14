@@ -13,41 +13,72 @@ public class API {
     // URL de base de l'API pour les planètes
     private static final String PLANETS_API_URL = "https://swapi.tech/api/planets/";
 
+    /**
+     * Méthode pour récupérer les données JSON d'une planète par nom
+     */
     public JSONObject getPlanets(String searchquery) {
         try {
-            // Construction de l'URL de l'API avec la recherche si spécifiée
             String urlString = PLANETS_API_URL;
             if (searchquery != null && !searchquery.isEmpty()) {
                 urlString += "?name=" + searchquery;
             }
-            
-            System.out.println("searchquery : "+ searchquery);
-            
-            // Création de l'objet URI pour l'URL de l'API
+
+            System.out.println("searchquery : " + searchquery);
             URI uri = new URI(urlString);
-            
-            System.out.println("URL : " + urlString);
-            System.out.println("URI : " + uri);
-            
-            // Ouverture d'une connexion HTTP
+
             HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
             conn.setRequestMethod("GET");
             conn.connect();
 
-            // Lecture de la réponse de l'API
-            Scanner scanner = new Scanner(conn.getInputStream());
-            StringBuilder responseBuilder = new StringBuilder();
-            while (scanner.hasNext()) {
-                responseBuilder.append(scanner.nextLine());
-            }
-            scanner.close();
+            try (Scanner scanner = new Scanner(conn.getInputStream())) {
+                StringBuilder responseBuilder = new StringBuilder();
+                while (scanner.hasNext()) {
+                    responseBuilder.append(scanner.nextLine());
+                }
 
-            // Conversion de la réponse en JSONObject
-            return new JSONObject(responseBuilder.toString());
+                return new JSONObject(responseBuilder.toString());
+            }
 
         } catch (IOException | URISyntaxException e) {
+            System.err.println("Erreur lors de la récupération des planètes : " + e.getMessage());
             e.printStackTrace();
         }
+
         return null;
+    }
+
+    /**
+     * Méthode pour récupérer dynamiquement un nom (ou titre) à partir d'une URL fournie par l'API SWAPI
+     */
+    public String getNameFromUrl(String url) {
+        try {
+            URI uri = new URI(url);
+            HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
+            conn.setRequestMethod("GET");
+            conn.connect();
+
+            try (Scanner scanner = new Scanner(conn.getInputStream())) {
+                StringBuilder responseBuilder = new StringBuilder();
+                while (scanner.hasNext()) {
+                    responseBuilder.append(scanner.nextLine());
+                }
+
+                JSONObject response = new JSONObject(responseBuilder.toString());
+                JSONObject result = response.getJSONObject("result");
+                JSONObject properties = result.getJSONObject("properties");
+
+                if (properties.has("name")) {
+                    return properties.getString("name");
+                } else if (properties.has("title")) {
+                    return properties.getString("title");
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'appel à l'URL : " + url);
+            e.printStackTrace();
+        }
+
+        return "Unknown";
     }
 }

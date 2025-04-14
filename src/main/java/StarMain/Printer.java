@@ -1,13 +1,15 @@
 package StarMain;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Printer {
 
-    private API api = new API();
-    private GetRequestRepository repository = new GetRequestRepository(api);
+    private final API api = new API(); // ← Ajout de "final" ✅
+    // repository non utilisé donc soit à supprimer, soit à laisser avec final pour éliminer le hint
+    private final GetRequestRepository repository = new GetRequestRepository(api); // ← Ajout de "final" ✅
 
-   // on affiche les films
+    // on affiche les films
     public void printDetailsFilms(JSONArray results) {
         for (int i = 0; i < results.length(); i++) {
             JSONObject film = results.getJSONObject(i);
@@ -17,28 +19,23 @@ public class Printer {
             System.out.println("Director : " + film.getJSONObject("properties").getString("director"));
             System.out.println("Producer : " + film.getJSONObject("properties").getString("producer"));
             System.out.println("Release Date : " + film.getJSONObject("properties").getString("release_date"));
-            
-            // les personnages (characters)
+
             JSONArray characters = film.getJSONObject("properties").getJSONArray("characters");
             System.out.println("\nCharacters :");
             printArrayValues(characters, "name");
 
-            // les planètes
             JSONArray planets = film.getJSONObject("properties").getJSONArray("planets");
             System.out.println("\nPlanets :");
             printArrayValues(planets, "name");
 
-            // Les vaisseaux
             JSONArray starships = film.getJSONObject("properties").getJSONArray("starships");
             System.out.println("\nStarships :");
             printArrayValues(starships, "name");
 
-            // les véhicules
             JSONArray vehicles = film.getJSONObject("properties").getJSONArray("vehicles");
             System.out.println("\nVehicles :");
             printArrayValues(vehicles, "name");
 
-            // les espèces
             JSONArray species = film.getJSONObject("properties").getJSONArray("species");
             System.out.println("\nSpecies :");
             printArrayValues(species, "name");
@@ -60,12 +57,10 @@ public class Printer {
             System.out.println("Surface water : " + planet.getString("surface_water"));
             System.out.println("Population : " + planet.getString("population"));
 
-           // résidents
             JSONArray residents = planet.getJSONArray("residents");
             System.out.println("\nResidents :");
             printArrayValues(residents, "name");
 
-            // films
             JSONArray films = planet.getJSONArray("films");
             System.out.println("\nFilms :");
             printArrayValues(films, "title");
@@ -103,6 +98,7 @@ public class Printer {
         }
     }
 
+    // ✅ On garde le paramètre key, même s’il n’est pas utilisé, pour ne rien casser
     private void printArrayValues(JSONArray jsonArray, String key) {
         for (int j = 0; j < jsonArray.length(); j++) {
             String value = jsonArray.getString(j);

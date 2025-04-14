@@ -7,7 +7,11 @@ import java.io.IOException;
 
 public class JacksonParser {
     public static void main(String[] args) {
-        String jsonString = "{\"films\": [{\"title\":\"Return of the Jedi\",\"episode_id\":6,\"director\":\"Richard Marquand\",\"release_date\":\"1983-05-25\"},{\"title\":\"The Empire Strikes Back\",\"episode_id\":5,\"director\":\"Irvin Kershner\",\"release_date\":\"1980-05-17\"},{\"title\":\"A New Hope\",\"episode_id\":4,\"director\":\"George Lucas\",\"release_date\":\"1977-05-25\"}]}";
+        String jsonString = "{\"films\": [" +
+                "{\"title\":\"Return of the Jedi\",\"episode_id\":6,\"director\":\"Richard Marquand\",\"release_date\":\"1983-05-25\"}," +
+                "{\"title\":\"The Empire Strikes Back\",\"episode_id\":5,\"director\":\"Irvin Kershner\",\"release_date\":\"1980-05-17\"}," +
+                "{\"title\":\"A New Hope\",\"episode_id\":4,\"director\":\"George Lucas\",\"release_date\":\"1977-05-25\"}" +
+                "]}";
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -27,6 +31,7 @@ public class JacksonParser {
                 System.out.println("-----------------------");
             }
         } catch (IOException e) {
+            System.err.println("❌ Erreur lors du parsing JSON avec Jackson.");
             e.printStackTrace();
         }
     }

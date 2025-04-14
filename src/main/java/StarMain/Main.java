@@ -1,28 +1,38 @@
 package StarMain;
+
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Veuillez entrer le point d'accès que vous souhaitez afficher (films, planets, starships) :");
-        String accessPoint = scanner.nextLine();
-        System.out.println("accessPoint : " + accessPoint);
-        
-        String searchQuery = null;
-        if (accessPoint.equals("films") || accessPoint.equals("planets") || accessPoint.equals("starships")) {
-            System.out.println("Veuillez entrer votre critère de recherche (ou appuyez sur Entrée pour afficher tout) :");
-            searchQuery = scanner.nextLine();
-            System.out.println("searchQuery : " + searchQuery);
-        } else {
-            System.out.println("Point d'accès non valide.");
-            scanner.close();
-            return;
-        }
-        scanner.close();
-
-        // Instanciez ArgumentSwitcher et traitez les arguments saisis par l'utilisateur
         ArgumentSwitcher argumentSwitcher = new ArgumentSwitcher();
-        argumentSwitcher.switcher(accessPoint, searchQuery);
+
+        try (Scanner scanner = new Scanner(System.in)) {
+            String accessPoint;
+
+            System.out.println("Bienvenue dans StarWars Explorer ✨");
+            System.out.println("Tapez 'films', 'planets' ou 'starships' pour explorer, ou 'exit' pour quitter.");
+
+            while (true) {
+                System.out.print("\nCommande (films/planets/starships/exit) : ");
+                accessPoint = scanner.nextLine().trim().toLowerCase();
+
+                if (accessPoint.equals("exit")) {
+                    System.out.println("👋 À bientôt !");
+                    break;
+                }
+
+                if (!accessPoint.equals("films") && !accessPoint.equals("planets") && !accessPoint.equals("starships")) {
+                    System.out.println("❌ Commande inconnue. Réessayez.");
+                    continue;
+                }
+
+                System.out.print("Critère de recherche (ou Entrée pour tout afficher) : ");
+                String searchQuery = scanner.nextLine().trim();
+                System.out.println("🔍 Recherche de " + accessPoint + (searchQuery.isEmpty() ? " (tout)" : " pour : " + searchQuery));
+
+                argumentSwitcher.switcher(accessPoint, searchQuery);
+            }
+        }
     }
 }
