@@ -169,42 +169,42 @@ public class HtmlPrinter {
             <h1>Star Wars Data Explorer</h1>
     
             <div class='section'>
-                <h2>🌍 Planètes</h2>
+                <h2> Planètes</h2>
                 <select id='planets'></select>
                 <button onclick="fetchDetails('planets')">Voir détails</button>
                 <div id='details-planets' class='details'></div>
             </div>
     
             <div class='section'>
-                <h2>📽️ Films</h2>
+                <h2> Films</h2>
                 <select id='films'></select>
                 <button onclick="fetchDetails('films')">Voir détails</button>
                 <div id='details-films' class='details'></div>
             </div>
     
             <div class='section'>
-                <h2>👤 Personnages</h2>
+                <h2> Personnages</h2>
                 <select id='people'></select>
                 <button onclick="fetchDetails('people')">Voir détails</button>
                 <div id='details-people' class='details'></div>
             </div>
     
             <div class='section'>
-                <h2>🚀 Vaisseaux</h2>
+                <h2> Vaisseaux</h2>
                 <select id='starships'></select>
                 <button onclick="fetchDetails('starships')">Voir détails</button>
                 <div id='details-starships' class='details'></div>
             </div>
     
             <div class='section'>
-                <h2>🚗 Véhicules</h2>
+                <h2> Véhicules</h2>
                 <select id='vehicles'></select>
                 <button onclick="fetchDetails('vehicles')">Voir détails</button>
                 <div id='details-vehicles' class='details'></div>
             </div>
     
             <div class='section'>
-                <h2>🧬 Espèces</h2>
+                <h2> Espèces</h2>
                 <select id='species'></select>
                 <button onclick="fetchDetails('species')">Voir détails</button>
                 <div id='details-species' class='details'></div>
