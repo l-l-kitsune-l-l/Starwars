@@ -22,7 +22,7 @@ public class MainApi {
             HtmlPrinter htmlPrinter = new HtmlPrinter();
             String htmlContent = htmlPrinter.printHtmlDetailsPlanets(jsonObject);
         
-            String filePath = "C:/Users/tekoh/Projet Programmation/html";
+            String filePath = "C:/Users/tekoh/Projet Programmation/html/page.html";
             htmlPrinter.saveHtmlToFile(htmlContent, filePath);
         
         } catch (Exception e) {
