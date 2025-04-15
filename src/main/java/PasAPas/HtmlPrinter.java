@@ -92,71 +92,177 @@ public class HtmlPrinter {
         }
     }
 
-    public void saveInteractivePlanetsPage(String filePath) {
+    public void saveFullInteractivePage(String filePath) {
         String htmlContent = """
-            <!DOCTYPE html>
-            <html lang="fr">
-            <head>
-                <meta charset="UTF-8">
-                <title>SWAPI - Planètes</title>
-                <style>
-                    body { font-family: Arial, sans-serif; padding: 20px; }
-                    h1 { color: #333; }
-                    select, button { font-size: 16px; margin-right: 10px; }
-                    #details { margin-top: 20px; }
-                    .label { font-weight: bold; }
-                </style>
-            </head>
-            <body>
-                <h1>🌍 Choisissez une planète</h1>
-                
-                <select id="planetSelect">
-                    <option disabled selected>Chargement...</option>
-                </select>
-                <button onclick="loadPlanetDetails()">Afficher les détails</button>
+        <!DOCTYPE html>
+        <html lang='fr'>
+        <head>
+            <meta charset='UTF-8'>
+            <title>Star Wars Data Explorer</title>
+            <style>
+                :root {
+                    --main-bg: #1c1e22;
+                    --card-bg: #2c2f33;
+                    --text-color: #f5f5f5;
+                    --accent-color: #7289da;
+                }
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    background-color: var(--main-bg);
+                    color: var(--text-color);
+                    margin: 0;
+                    padding: 20px;
+                }
+                h1 {
+                    text-align: center;
+                    margin-bottom: 40px;
+                    color: var(--accent-color);
+                }
+                .section {
+                    background-color: var(--card-bg);
+                    padding: 20px;
+                    border-radius: 10px;
+                    margin-bottom: 30px;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                }
+                h2 {
+                    color: var(--accent-color);
+                    margin-bottom: 10px;
+                }
+                select, button {
+                    font-size: 16px;
+                    padding: 8px;
+                    margin: 10px 0;
+                    border: none;
+                    border-radius: 5px;
+                    background-color: #3b3f45;
+                    color: var(--text-color);
+                    outline: none;
+                }
+                button {
+                    background-color: var(--accent-color);
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+                }
+                button:hover {
+                    background-color: #5b6eae;
+                }
+                .label {
+                    font-weight: bold;
+                    display: inline-block;
+                    width: 180px;
+                    color: #aabbee;
+                }
+                .details {
+                    margin-top: 15px;
+                    line-height: 1.8;
+                    border-left: 4px solid var(--accent-color);
+                    padding-left: 15px;
+                    background-color: #25282d;
+                    border-radius: 6px;
+                    padding: 15px;
+                    box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
+                }
+            </style>
+        </head>
+        <body>
+            <h1>Star Wars Data Explorer</h1>
     
-                <div id="details"></div>
+            <div class='section'>
+                <h2>🌍 Planètes</h2>
+                <select id='planets'></select>
+                <button onclick="fetchDetails('planets')">Voir détails</button>
+                <div id='details-planets' class='details'></div>
+            </div>
     
-                <script>
-                    let planetsData = [];
+            <div class='section'>
+                <h2>📽️ Films</h2>
+                <select id='films'></select>
+                <button onclick="fetchDetails('films')">Voir détails</button>
+                <div id='details-films' class='details'></div>
+            </div>
     
-                    window.onload = async function () {
-                        const response = await fetch("https://swapi.tech/api/planets");
-                        const data = await response.json();
-                        planetsData = data.results;
+            <div class='section'>
+                <h2>👤 Personnages</h2>
+                <select id='people'></select>
+                <button onclick="fetchDetails('people')">Voir détails</button>
+                <div id='details-people' class='details'></div>
+            </div>
     
-                        const select = document.getElementById("planetSelect");
-                        select.innerHTML = "";
+            <div class='section'>
+                <h2>🚀 Vaisseaux</h2>
+                <select id='starships'></select>
+                <button onclick="fetchDetails('starships')">Voir détails</button>
+                <div id='details-starships' class='details'></div>
+            </div>
     
-                        planetsData.forEach((planet) => {
-                            const option = document.createElement("option");
-                            option.value = planet.uid;
-                            option.text = planet.name;
+            <div class='section'>
+                <h2>🚗 Véhicules</h2>
+                <select id='vehicles'></select>
+                <button onclick="fetchDetails('vehicles')">Voir détails</button>
+                <div id='details-vehicles' class='details'></div>
+            </div>
+    
+            <div class='section'>
+                <h2>🧬 Espèces</h2>
+                <select id='species'></select>
+                <button onclick="fetchDetails('species')">Voir détails</button>
+                <div id='details-species' class='details'></div>
+            </div>
+    
+            <script>
+                const types = ['planets', 'films', 'people', 'starships', 'vehicles', 'species'];
+    
+                window.onload = () => {
+                    types.forEach(async type => {
+                        const res = await fetch(`https://swapi.tech/api/${type}`);
+                        const data = await res.json();
+                        const select = document.getElementById(type);
+                        select.innerHTML = '';
+                        const items = data.results || data.result || [];
+                        items.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.uid || item.id;
+                            option.textContent = item.name || item.title || 'Sans nom';
                             select.appendChild(option);
                         });
-                    };
+                    });
+                };
     
-                    async function loadPlanetDetails() {
-                        const uid = document.getElementById("planetSelect").value;
-                        const response = await fetch(`https://swapi.tech/api/planets/${uid}`);
-                        const data = await response.json();
-                        const props = data.result.properties;
+                async function fetchDetails(type) {
+                    const uid = document.getElementById(type).value;
+                    const res = await fetch(`https://swapi.tech/api/${type}/${uid}`);
+                    const data = await res.json();
+                    const props = data.result.properties;
     
-                        document.getElementById("details").innerHTML = `
-                            <h2>${props.name}</h2>
-                            <p><span class='label'>Rotation Period:</span> ${props.rotation_period}</p>
-                            <p><span class='label'>Orbital Period:</span> ${props.orbital_period}</p>
-                            <p><span class='label'>Diameter:</span> ${props.diameter}</p>
-                            <p><span class='label'>Gravity:</span> ${props.gravity}</p>
-                            <p><span class='label'>Terrain:</span> ${props.terrain}</p>
-                            <p><span class='label'>Surface Water:</span> ${props.surface_water}</p>
-                            <p><span class='label'>Population:</span> ${props.population}</p>
-                        `;
+                    let html = `<h3 style='color:#fff;'>${props.name || props.title}</h3>`;
+                    for (const key in props) {
+                        const value = props[key];
+    
+                        // Si le champ est un tableau d'URLs (comme starships, characters, planets, vehicles, species)
+                        if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string' && value[0].startsWith('https://')) {
+                            html += `<p><span class='label'>${key.replace(/_/g, ' ')}:</span> <ul>`;
+                            for (const url of value) {
+                                try {
+                                    const subRes = await fetch(url);
+                                    const subData = await subRes.json();
+                                    const name = subData.result.properties.name || subData.result.properties.title;
+                                    html += `<li>${name}</li>`;
+                                } catch (err) {
+                                    html += `<li>Erreur de chargement</li>`;
+                                }
+                            }
+                            html += `</ul></p>`;
+                        } else {
+                            html += `<p><span class='label'>${key.replace(/_/g, ' ')}:</span> ${value}</p>`;
+                        }
                     }
-                </script>
-            </body>
-            </html>
-            """;
+                    document.getElementById(`details-${type}`).innerHTML = html;
+                }
+            </script>
+        </body>
+        </html>
+        """;
     
         saveHtmlToFile(htmlContent, filePath);
     }
