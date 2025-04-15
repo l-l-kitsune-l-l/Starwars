@@ -3,8 +3,6 @@ package PasAPas;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.awt.Desktop;
-import java.io.File;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,11 +10,11 @@ import org.json.JSONObject;
 public class HtmlPrinter {
 
     private String codeHtml;
-    private final API api = new API(); // Ajout du "final" selon le hint
 
     public String printHtmlDetailsPlanets(JSONObject planetData) {
         if (planetData != null) {
             StringBuilder htmlBuilder = new StringBuilder();
+
             htmlBuilder.append("""
                 <html>
                 <head>
@@ -52,77 +50,115 @@ public class HtmlPrinter {
                 JSONArray results = planetData.getJSONArray("result");
 
                 for (int i = 0; i < results.length(); i++) {
-                    JSONObject planet = results.getJSONObject(i);
-                    JSONObject properties = planet.getJSONObject("properties");
+                    JSONObject planet = results.getJSONObject(i).getJSONObject("properties");
 
-                    htmlBuilder.append("<div class='planet'>");
-                    htmlBuilder.append("<h2>").append(properties.getString("name")).append("</h2>");
-                    htmlBuilder.append("<p><strong>Rotation Period:</strong> ").append(properties.getString("rotation_period")).append("</p>");
-                    htmlBuilder.append("<p><strong>Orbital Period:</strong> ").append(properties.getString("orbital_period")).append("</p>");
-                    htmlBuilder.append("<p><strong>Diameter:</strong> ").append(properties.getString("diameter")).append("</p>");
-                    htmlBuilder.append("<p><strong>Gravity:</strong> ").append(properties.getString("gravity")).append("</p>");
-                    htmlBuilder.append("<p><strong>Terrain:</strong> ").append(properties.getString("terrain")).append("</p>");
-                    htmlBuilder.append("<p><strong>Surface Water:</strong> ").append(properties.getString("surface_water")).append("</p>");
-                    htmlBuilder.append("<p><strong>Population:</strong> ").append(properties.getString("population")).append("</p>");
+                    htmlBuilder.append("<div class='planet'>")
+                            .append("<h2>").append(planet.getString("name")).append("</h2>")
+                            .append("<p><strong>Rotation Period:</strong> ").append(planet.getString("rotation_period")).append("</p>")
+                            .append("<p><strong>Orbital Period:</strong> ").append(planet.getString("orbital_period")).append("</p>")
+                            .append("<p><strong>Diameter:</strong> ").append(planet.getString("diameter")).append("</p>")
+                            .append("<p><strong>Gravity:</strong> ").append(planet.getString("gravity")).append("</p>")
+                            .append("<p><strong>Terrain:</strong> ").append(planet.getString("terrain")).append("</p>")
+                            .append("<p><strong>Surface Water:</strong> ").append(planet.getString("surface_water")).append("</p>")
+                            .append("<p><strong>Population:</strong> ").append(planet.getString("population")).append("</p>");
 
-                    // Résidents
-                    if (planet.has("residents") && !planet.isNull("residents")) {
-                        JSONArray residents = planet.getJSONArray("residents");
-                        if (residents.length() > 0) {
-                            htmlBuilder.append("<p>Residents:</p><ul>");
-                            for (int j = 0; j < residents.length(); j++) {
-                                htmlBuilder.append("<li>").append(residents.getString(j)).append("</li>");
-                            }
-                            htmlBuilder.append("</ul>");
-                        } else {
-                            htmlBuilder.append("<p>No known residents.</p>");
-                        }
+                    // Champs facultatifs : residents & films
+                    if (planet.has("residents")) {
+                        htmlBuilder.append("<p>Residents field found (but not resolved by API by default)</p>");
                     }
-                    
 
-                    // Films
-                    if (planet.has("films") && !planet.isNull("films")) {
-                        JSONArray films = planet.getJSONArray("films");
-                        if (films.length() > 0) {
-                            htmlBuilder.append("<p>Films:</p><ul>");
-                            for (int j = 0; j < films.length(); j++) {
-                                htmlBuilder.append("<li>").append(films.getString(j)).append("</li>");
-                            }
-                            htmlBuilder.append("</ul>");
-                        } else {
-                            htmlBuilder.append("<p>No known films.</p>");
-                        }
-                    } else {
-                        htmlBuilder.append("<p>No film data available for this planet.</p>");
+                    if (planet.has("films")) {
+                        htmlBuilder.append("<p>Films field found (but not resolved by API by default)</p>");
                     }
-                    
 
                     htmlBuilder.append("</div>");
                 }
             }
 
             htmlBuilder.append("</body></html>");
-            codeHtml = htmlBuilder.toString();
-            System.out.println(codeHtml);
-        }
 
+            codeHtml = htmlBuilder.toString();
+        }
         return codeHtml;
     }
 
     public void saveHtmlToFile(String htmlContent, String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write(htmlContent);
-            System.out.println("HTML content has been saved to: " + filePath);
-
-            // Ouvre automatiquement le fichier dans le navigateur
-            File htmlFile = new File(filePath);
-            if (Desktop.isDesktopSupported()) {
-                Desktop.getDesktop().browse(htmlFile.toURI());
-            }
-
+            System.out.println("✅ HTML sauvegardé dans : " + filePath);
         } catch (IOException e) {
-            System.err.println("Erreur lors de la sauvegarde ou de l'ouverture du fichier HTML : " + e.getMessage());
+            System.err.println("❌ Erreur lors de la sauvegarde : " + filePath);
             e.printStackTrace();
         }
     }
+
+    public void saveInteractivePlanetsPage(String filePath) {
+        String htmlContent = """
+            <!DOCTYPE html>
+            <html lang="fr">
+            <head>
+                <meta charset="UTF-8">
+                <title>SWAPI - Planètes</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    h1 { color: #333; }
+                    select, button { font-size: 16px; margin-right: 10px; }
+                    #details { margin-top: 20px; }
+                    .label { font-weight: bold; }
+                </style>
+            </head>
+            <body>
+                <h1>🌍 Choisissez une planète</h1>
+                
+                <select id="planetSelect">
+                    <option disabled selected>Chargement...</option>
+                </select>
+                <button onclick="loadPlanetDetails()">Afficher les détails</button>
+    
+                <div id="details"></div>
+    
+                <script>
+                    let planetsData = [];
+    
+                    window.onload = async function () {
+                        const response = await fetch("https://swapi.tech/api/planets");
+                        const data = await response.json();
+                        planetsData = data.results;
+    
+                        const select = document.getElementById("planetSelect");
+                        select.innerHTML = "";
+    
+                        planetsData.forEach((planet) => {
+                            const option = document.createElement("option");
+                            option.value = planet.uid;
+                            option.text = planet.name;
+                            select.appendChild(option);
+                        });
+                    };
+    
+                    async function loadPlanetDetails() {
+                        const uid = document.getElementById("planetSelect").value;
+                        const response = await fetch(`https://swapi.tech/api/planets/${uid}`);
+                        const data = await response.json();
+                        const props = data.result.properties;
+    
+                        document.getElementById("details").innerHTML = `
+                            <h2>${props.name}</h2>
+                            <p><span class='label'>Rotation Period:</span> ${props.rotation_period}</p>
+                            <p><span class='label'>Orbital Period:</span> ${props.orbital_period}</p>
+                            <p><span class='label'>Diameter:</span> ${props.diameter}</p>
+                            <p><span class='label'>Gravity:</span> ${props.gravity}</p>
+                            <p><span class='label'>Terrain:</span> ${props.terrain}</p>
+                            <p><span class='label'>Surface Water:</span> ${props.surface_water}</p>
+                            <p><span class='label'>Population:</span> ${props.population}</p>
+                        `;
+                    }
+                </script>
+            </body>
+            </html>
+            """;
+    
+        saveHtmlToFile(htmlContent, filePath);
+    }
+    
 }

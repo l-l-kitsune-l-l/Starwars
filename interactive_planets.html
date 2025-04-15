@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>SWAPI - Planètes</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { color: #333; }
+        select, button { font-size: 16px; margin-right: 10px; }
+        #details { margin-top: 20px; }
+        .label { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🌍 Choisissez une planète</h1>
+
+    <select id="planetSelect">
+        <option disabled selected>Chargement...</option>
+    </select>
+    <button onclick="loadPlanetDetails()">Afficher les détails</button>
+
+    <div id="details"></div>
+
+    <script>
+        let planetsData = [];
+
+        window.onload = async function () {
+            const response = await fetch("https://swapi.tech/api/planets");
+            const data = await response.json();
+            planetsData = data.results;
+
+            const select = document.getElementById("planetSelect");
+            select.innerHTML = "";
+
+            planetsData.forEach((planet) => {
+                const option = document.createElement("option");
+                option.value = planet.uid;
+                option.text = planet.name;
+                select.appendChild(option);
+            });
+        };
+
+        async function loadPlanetDetails() {
+            const uid = document.getElementById("planetSelect").value;
+            const response = await fetch(`https://swapi.tech/api/planets/${uid}`);
+            const data = await response.json();
+            const props = data.result.properties;
+
+            document.getElementById("details").innerHTML = `
+                <h2>${props.name}</h2>
+                <p><span class='label'>Rotation Period:</span> ${props.rotation_period}</p>
+                <p><span class='label'>Orbital Period:</span> ${props.orbital_period}</p>
+                <p><span class='label'>Diameter:</span> ${props.diameter}</p>
+                <p><span class='label'>Gravity:</span> ${props.gravity}</p>
+                <p><span class='label'>Terrain:</span> ${props.terrain}</p>
+                <p><span class='label'>Surface Water:</span> ${props.surface_water}</p>
+                <p><span class='label'>Population:</span> ${props.population}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
