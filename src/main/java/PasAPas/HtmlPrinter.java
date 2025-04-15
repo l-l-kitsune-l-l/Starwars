@@ -66,32 +66,36 @@ public class HtmlPrinter {
                     htmlBuilder.append("<p><strong>Population:</strong> ").append(properties.getString("population")).append("</p>");
 
                     // Résidents
-                    JSONArray residents = properties.getJSONArray("residents");
-                    htmlBuilder.append("<p><strong>Residents:</strong></p>");
-                    if (residents.length() > 0) {
-                        htmlBuilder.append("<ul>");
-                        for (int j = 0; j < residents.length(); j++) {
-                            String name = api.getNameFromUrl(residents.getString(j));
-                            htmlBuilder.append("<li>").append(name).append("</li>");
+                    if (planet.has("residents") && !planet.isNull("residents")) {
+                        JSONArray residents = planet.getJSONArray("residents");
+                        if (residents.length() > 0) {
+                            htmlBuilder.append("<p>Residents:</p><ul>");
+                            for (int j = 0; j < residents.length(); j++) {
+                                htmlBuilder.append("<li>").append(residents.getString(j)).append("</li>");
+                            }
+                            htmlBuilder.append("</ul>");
+                        } else {
+                            htmlBuilder.append("<p>No known residents.</p>");
                         }
-                        htmlBuilder.append("</ul>");
-                    } else {
-                        htmlBuilder.append("<p><i>No known residents.</i></p>");
                     }
+                    
 
                     // Films
-                    JSONArray films = properties.getJSONArray("films");
-                    htmlBuilder.append("<p><strong>Films:</strong></p>");
-                    if (films.length() > 0) {
-                        htmlBuilder.append("<ul>");
-                        for (int j = 0; j < films.length(); j++) {
-                            String title = api.getNameFromUrl(films.getString(j));
-                            htmlBuilder.append("<li>").append(title).append("</li>");
+                    if (planet.has("films") && !planet.isNull("films")) {
+                        JSONArray films = planet.getJSONArray("films");
+                        if (films.length() > 0) {
+                            htmlBuilder.append("<p>Films:</p><ul>");
+                            for (int j = 0; j < films.length(); j++) {
+                                htmlBuilder.append("<li>").append(films.getString(j)).append("</li>");
+                            }
+                            htmlBuilder.append("</ul>");
+                        } else {
+                            htmlBuilder.append("<p>No known films.</p>");
                         }
-                        htmlBuilder.append("</ul>");
                     } else {
-                        htmlBuilder.append("<p><i>No films available.</i></p>");
+                        htmlBuilder.append("<p>No film data available for this planet.</p>");
                     }
+                    
 
                     htmlBuilder.append("</div>");
                 }

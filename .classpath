@@ -44,11 +44,6 @@
 			<attribute name="m2e-apt" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/Donnees boulot/FTP/Logiciels pour etu/Java/jackson-annotations-2.16.1.jar"/>
-	<classpathentry kind="lib" path="D:/Donnees boulot/FTP/Logiciels pour etu/Java/jackson-databind-2.16.1.jar"/>
-	<classpathentry kind="lib" path="D:/Donnees boulot/FTP/Logiciels pour etu/Java/jackson-core-2.16.1.jar"/>
-	<classpathentry kind="lib" path="D:/Donnees boulot/FTP/Logiciels pour etu/Java/gson-2.10.1.jar"/>
-	<classpathentry kind="lib" path="D:/Donnees boulot/FTP/Logiciels pour etu/Java/json-20240205.jar"/>
 	<classpathentry kind="src" output="target/test-classes" path="target/generated-test-sources/test-annotations">
 		<attributes>
 			<attribute name="optional" value="true"/>
