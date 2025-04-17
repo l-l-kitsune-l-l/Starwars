@@ -10,7 +10,7 @@ public class MainApi {
             // Créer une instance de HtmlPrinter
             HtmlPrinter htmlPrinter = new HtmlPrinter();
 
-            // Chemin du fichier à générer
+            
             String fullPath = "interactive_swapi_all.html";
 
             // Générer la page HTML complète
@@ -20,13 +20,13 @@ public class MainApi {
             File htmlFile = new File(fullPath);
             if (htmlFile.exists()) {
                 Desktop.getDesktop().browse(htmlFile.toURI());
-                System.out.println("✅ Page interactive SWAPI ouverte dans le navigateur.");
+                System.out.println(" Page interactive SWAPI ouverte dans le navigateur.");
             } else {
-                System.err.println("❌ Le fichier HTML n'a pas été trouvé.");
+                System.err.println(" Le fichier HTML n'a pas été trouvé.");
             }
 
         } catch (Exception e) {
-            System.err.println("❌ Erreur dans MainApi : " + e.getMessage());
+            System.err.println(" Erreur dans MainApi : " + e.getMessage());
             e.printStackTrace();
         }
     }
